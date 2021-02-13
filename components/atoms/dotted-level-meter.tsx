@@ -19,7 +19,7 @@ export default function DottedLevelMeter(props: Partial<DottedLevelMeterProps>) 
   const dots: React.ReactNode[] = []
   for (let n=1; n<props.dotsCount; n++) {
     dots.push(
-      <div className={`w-4 ${validDotsCount >= n ? "bg-green-500" : "bg-white"} w-3`} />
+      <div className={`${validDotsCount >= n ? "bg-green-500" : "bg-white"} w-3`} />
     );
   }
 
