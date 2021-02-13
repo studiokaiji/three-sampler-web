@@ -5,14 +5,12 @@ export type DottedLevelMeterProps = {
   max: number;
   min: number;
   level: number;
-  width: number;
   dotsCount: number;
 }
 
 export default function DottedLevelMeter(props: Partial<DottedLevelMeterProps>) {
   props.max ??= 1;
   props.min ??= 0;
-  props.width ??= 120;
   props.dotsCount ??= 6;
   props.level ??= 0;
 
