@@ -6,5 +6,5 @@ export type SquareButtonProps = {
 }
 
 export default function SquareButton(props: SquareButtonProps) {
-  return <button className={`${props.className} w-14 h-14`}>{props.body}</button>
+  return <button className={`${props.className} w-14 h-14`}>{props.children}</button>
 }
