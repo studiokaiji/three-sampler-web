@@ -1,6 +1,6 @@
 import React from "react";
 
-type DottedLevelMeterProps = {
+export type DottedLevelMeterProps = {
   className: string;
   max: number;
   min: number;

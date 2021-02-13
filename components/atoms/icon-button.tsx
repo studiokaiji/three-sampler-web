@@ -1,6 +1,6 @@
 import React from "react"
 
-type SquareButtonProps = {
+export type SquareButtonProps = {
   className?: string;
   body: React.ReactNode;
 }
