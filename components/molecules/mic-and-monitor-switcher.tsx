@@ -8,7 +8,10 @@ export default function MicAndMonitorSwitcher(props: DottedLevelMeterProps) {
     <div className={props.className}>
       <div className="flex justify-between">
         <IconButton>
-          <p></p>
+          <img id="mic-icon" />
+        </IconButton>
+        <IconButton>
+          <img id="headphone-icon" />
         </IconButton>
       </div>
       <DottedLevelMeter {...props} className="w-32" />
