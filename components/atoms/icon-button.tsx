@@ -2,7 +2,7 @@ import React from "react"
 
 export type SquareButtonProps = {
   className?: string;
-  body: React.ReactNode;
+  children: React.ReactNode;
 }
 
 export default function SquareButton(props: SquareButtonProps) {
