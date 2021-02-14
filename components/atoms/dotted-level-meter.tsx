@@ -9,17 +9,17 @@ export type DottedLevelMeterProps = {
 }
 
 export default function DottedLevelMeter(props: Partial<DottedLevelMeterProps>) {
-  props.max ??= 1;
-  props.min ??= 0;
-  props.dotsCount ??= 6;
-  props.level ??= 0;
+  const max = props.max || 1;
+  const min = props.min || 0;
+  const dotsCount = props.dotsCount || 7;
+  const level = props.level || 0;
 
-  const validDotsCount = Math.floor(props.level / (props.max - props.min) * props.dotsCount);
+  const validDotsCount = Math.floor(level / (max - min) * dotsCount);
 
   const dots: React.ReactNode[] = []
-  for (let n=1; n<props.dotsCount; n++) {
+  for (let n=1; n<=dotsCount; n++) {
     dots.push(
-      <div className={`${validDotsCount >= n ? "bg-green-500" : "bg-white"} w-3`} />
+      <div className={`${validDotsCount >= n ? "bg-green-500" : "bg-white"} w-3 h-3 rounded-full`} />
     );
   }
 
