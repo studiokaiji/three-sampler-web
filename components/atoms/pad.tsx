@@ -3,22 +3,20 @@ import React from "react";
 export type PadProps = {
   className?: string;
   children: React.ReactNode;
-  onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-  onHoldStart: () => void;
-  onHoldEnd: () => void;
+  onMouseDown: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  onMouseUp: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
 }
 
 export default function Pad(props: PadProps) {
   const mouseDowned = () => {
-    setTimeout(props.onHoldStart, 200);
+    setTimeout(props.onHoldStart);
   }
 
   return (
     <button
       className={`w-24 h-24 focus:outline-none ${props.className}`}
-      onClick={props.onClick}
-      onMouseDown={mouseDowned}
-      onMouseUp={props.onHoldEnd}
+      onMouseDown={props.onMouseDown}
+      onMouseUp={props.onMouseUp}
     >
       {props.children}
     </button>
