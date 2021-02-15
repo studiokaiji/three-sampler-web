@@ -1,5 +1,4 @@
 import React from "react";
-import IconButton from "../atoms/icon-button";
 import DottedLevelMeter, { DottedLevelMeterProps } from "../atoms/dotted-level-meter";
 
 export type MicAndMonitorSwitcherProps = {
@@ -12,12 +11,12 @@ export default function MicAndMonitorSwitcher(props: MicAndMonitorSwitcherProps)
     <div className={props.className}>
       <DottedLevelMeter {...props} />
       <div className="flex justify-between mt-3">
-        <IconButton className="bg-white" onClick={props.onClickMicIcon}>
+        <button className="bg-white w-10 h-10 focus:outline-none" onClick={props.onClickMicIcon}>
           <img id="mic-icon" />
-        </IconButton>
-        <IconButton className="bg-white" onClick={props.onClickMonitorIcon}>
+        </button>
+        <button className="bg-white w-10 h-10 focus:outline-none" onClick={props.onClickMonitorIcon}>
           <img id="headphone-icon" />
-        </IconButton>
+        </button>
       </div>
     </div>
   );
