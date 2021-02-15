@@ -1,5 +1,5 @@
 import React from "react"
 
-export default function Performance() {
+export default function Effect() {
   return <div />
 }
