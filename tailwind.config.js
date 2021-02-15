@@ -7,7 +7,7 @@ module.exports = {
         "primary-dark": "#03044A",
         "primary": "#1C1F89",
         "primary-light": "#B7B8E4",
-        "primary-thin": "F4F4F9",
+        "primary-thin": "#F4F4F9",
         "secondary-dark": "#F59703",
         "secondary": "#F7C100",
         "secondary-light": "#FFE58A",
