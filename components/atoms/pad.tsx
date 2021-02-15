@@ -8,10 +8,6 @@ export type PadProps = {
 }
 
 export default function Pad(props: PadProps) {
-  const mouseDowned = () => {
-    setTimeout(props.onHoldStart);
-  }
-
   return (
     <button
       className={`w-24 h-24 focus:outline-none ${props.className}`}
