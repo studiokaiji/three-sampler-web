@@ -10,7 +10,7 @@ module.exports = {
         "primary-thin": "F4F4F9",
         "secondary-dark": "#F59703",
         "secondary": "#F7C100",
-        "sendodary-light": "#FFE58A",
+        "secondary-light": "#FFE58A",
         "secondary-thin": "#FFFCF5",
         "accent-dark": "#D4300C",
         "accent": "#E66218",
