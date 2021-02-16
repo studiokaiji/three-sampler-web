@@ -8,7 +8,8 @@ export type PadGridProps = {
   selectedPadClassName: string;
   unselectedPadClassName?: string;
   padIndex: number;
-  onSelectPad: (index: number) => void;
+  onPressPad: (index: number) => void;
+  onPressEndPad: (index: number) => void;
 }
 
 export default function PadGrid(props: PadGridProps) {
@@ -19,7 +20,8 @@ export default function PadGrid(props: PadGridProps) {
     pads.push(
       <Pad
         className={props.padIndex === i ? props.selectedPadClassName : unselectedPadClassName}
-        onClick={() => props.onSelectPad(i)}
+        onMouseDown={() => props.onPressPad(i)}
+        onMouseUp={() => props.onPressEndPad(i)}
       >
         <p>{i}</p>
       </Pad>
