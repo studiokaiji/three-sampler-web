@@ -1,11 +1,30 @@
-import React, { useContext, useEffect } from "react";
+import React, { useEffect, useState, useReducer } from "react";
 import MicAndMonitorSwitcher from "../../components/molecules/mic-and-monitor-switcher";
 import SectionTab from "../../components/molecules/section-tab";
 import Router from "next/router";
 import Bank from "../../components/molecules/bank";
 import PadGrid from "../../components/molecules/pad-grid";
 
-const SampleContext = React.createContext<HTMLAudioElement[]>(Array(16));
+type Sample = HTMLAudioElement;
+type SampleAction =
+{
+  type: "assign",
+  index: number,
+  value: Sample,
+} | {
+  type: "remove",
+  index: number,
+}
+
+function samplesReducer(state: Sample[], action: SampleAction) {
+  if (action.type === "assign") {
+    state[action.index] = action.value;
+  } else {
+    state[action.index] = new Audio();
+  }
+
+  return state;
+}
 
 async function createStream() {
   const stream = await navigator.mediaDevices.getUserMedia({
@@ -19,7 +38,8 @@ async function createStream() {
 let recorder: MediaRecorder;
 
 export default function Sample() {
-  const samples = useContext(SampleContext);
+  const [samples, dispatchSamples] = useReducer(samplesReducer, []);
+  const recordedPadIndexes = useState<number[]>([]);
 
   useEffect(() => {
     createStream().then((stream) => {
@@ -48,7 +68,11 @@ export default function Sample() {
 
     recorder.addEventListener("dataavailable", (e) => {
       const url = URL.createObjectURL(e.data);
-      samples[padIndex] = new Audio(url);
+      dispatchSamples({
+        type: "assign",
+        index: padIndex,
+        value: new Audio(url)
+      })
 
       console.log("dataAvailable", url);
     });
@@ -104,6 +128,7 @@ export default function Sample() {
             className="w-9/12"
             selectedPadClassName="bg-primary"
             padIndex={0}
+            recordedPadIndexes={recordedPadIndexes}
             onPressPad={(i) => pressedPadHandler(i)}
             onPressEndPad={(i) => pressedEndPadHandler(i)}
           />
