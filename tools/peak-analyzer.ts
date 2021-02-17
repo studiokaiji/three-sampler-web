@@ -5,27 +5,36 @@ export default class PeakAnalyzer {
     const req = new XMLHttpRequest();
     req.open("GET", url, true);
     req.responseType = "arraybuffer";
+    console.log(req);
+    req.send();
+
     return new Promise((resolve, reject) => {
       req.onload = async () => {
-      if (req.status === 200) {
-        const peaks = await this.onLoadSound(req.response, peakLength);
-        resolve(peaks);
-      } else {
-        reject(req.statusText);
-      }
-    };
+        if (req.status === 200) {
+          console.log(req.status);
+          const peaks = await this.onLoadSound(req.response, peakLength);
+          resolve(peaks);
+        } else {
+          console.log(req.status);
+          reject(req.statusText);
+        }
+      };
     });
   }
 
   async onLoadSound(audioData: ArrayBuffer, peakLength: number): Promise<number[][]> {
+    console.log("N");
+
     const buf = await this.audioCtx.decodeAudioData(audioData);
-    const ch1 = buf.getChannelData(0);
-    const ch1Peaks = this.getPeaks(ch1, peakLength);
 
-    const ch2 = buf.getChannelData(1);
-    const ch2Peaks = this.getPeaks(ch2, peakLength);
+    const chPeaksArray: number[][] = [];
+    for (let i=0; i<buf.numberOfChannels; i++) {
+      const ch = buf.getChannelData(i);
+      const peaks = this.getPeaks(ch, peakLength);
+      chPeaksArray.push(peaks);
+    }
 
-    return [ch1Peaks, ch2Peaks];
+    return chPeaksArray;
   }
 
   getPeaks(array: Float32Array, peakLength: number): number[] {
