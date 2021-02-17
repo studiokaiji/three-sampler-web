@@ -4,7 +4,6 @@ import PeakAnalyzer from "../../tools/peak-analyzer";
 export type WaveformProps = {
   url: string;
   width: number;
-  height: number;
 } & JSX.IntrinsicElements["div"];
 
 export default function Waveform(props: WaveformProps) {
@@ -19,41 +18,42 @@ export default function Waveform(props: WaveformProps) {
   
   useEffect(() => {
     const analyzer = new PeakAnalyzer();
-    analyzer.analyze(props.url, 1000).then((peaksArr) => {
-      drawWaveForm(peaksArr[0], peaksArr[1]);
+    console.log("A");
+    analyzer.analyze(props.url, 9000).then((peaksArr) => {
+      drawWaveForm(peaksArr)
     }).catch((err) => {
       console.error(err);
     });
   }, []);
 
-  const drawWaveForm = (ch1: number[], ch2: number[]) => {
+  const drawWaveForm = (peaksArr: number[][]) => {
     const canvas = canvasRef.current;
     if (!canvas) throw Error("canvas is null.");
 
-    const barWidth = canvas.width / ch1.length;
+    const barWidth = canvas.width / peaksArr[0].length;
     const halfCanvasHeight = canvas.height / 2;
 
     const ctx = getContext();
     if (!ctx) throw Error("canvasContext is null.");
     
-    ctx.fillStyle = "#D3D3D3";
+    ctx.fillStyle = "#000000";
     
     let sample: number;
     let barHeight: number;
-    for (let i=0, len = ch1.length; i<len; i++) {
-      sample = ch1[i];
-      barHeight = sample * halfCanvasHeight;
-      ctx.fillRect(i * barWidth, halfCanvasHeight - barHeight, barWidth, barHeight);
-
-      sample = ch2[i];
-      barHeight = sample * halfCanvasHeight;
-      ctx.fillRect(i * barWidth, halfCanvasHeight, barWidth, barHeight);
+    for (let i=0, len = peaksArr[0].length; i<len; i++) {
+      peaksArr.forEach((peaks, index) => {
+        sample = peaks[index];
+        barHeight = sample * halfCanvasHeight;
+        ctx.fillRect(i * barWidth, halfCanvasHeight - barHeight, barWidth, barHeight);
+      });
     }
+
+    ctx.save();
   }
 
   return (
     <div {...props}>
-      <canvas ref={canvasRef} />
+      <canvas ref={canvasRef} width={props.width} />
     </div>
   );
 }
