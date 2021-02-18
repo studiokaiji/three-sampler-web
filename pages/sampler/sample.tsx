@@ -24,7 +24,7 @@ class Sample {
     this.pitch = opts.pitch || 0;
     this.volume = opts.volume || 1;
     this.pan = opts.pan || 0;
-    this.oneShot = opts.oneShot || false;
+    this.oneShot = opts.oneShot || true;
   }
 }
 
