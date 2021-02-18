@@ -6,13 +6,28 @@ import Bank from "../../components/molecules/bank";
 import PadGrid from "../../components/molecules/pad-grid";
 import WaveForm from "../../components/atoms/waveform";
 
-type Sample = {
-  audio: HTMLAudioElement,
-  waveform?: typeof WaveForm,
+class Sample {
+  audio: HTMLAudioElement;
   pitch: number;
   volume: number;
   pan: number;
-};
+  waveform: typeof WaveForm | null;
+
+  constructor(opts: {
+    audio?: HTMLAudioElement;
+    pitch?: number;
+    volume?: number;
+    pan?: number;
+    waveform?: typeof WaveForm;
+  }) {
+    this.audio = opts.audio || new Audio();
+    this.pitch = opts.pitch || 0;
+    this.volume = opts.volume || 0;
+    this.pan = opts.pan || 0;
+    this.waveform = opts.waveform || null;
+  }
+}
+
 
 type SampleAction =
 {
@@ -29,7 +44,7 @@ function samplesReducer(state: Sample[], action: SampleAction) {
     state[action.index] = action.value;
     console.log(state);
   } else {
-    state[action.index] = new Audio();
+    state[action.index] = null;
   }
 
   return state;
@@ -46,9 +61,9 @@ async function createStream() {
 
 let recorder: MediaRecorder;
 
-export default function Sample() {
-  const [samples, dispatchSamples] = useReducer(samplesReducer, Array(16));
-  const [sampleUrls, setSampleUrls] = useState<string[]>(Array(16));
+export default function SamplePage() {
+  const [samples, dispatchSamples] = useReducer(samplesReducer, []);
+  const [sampleUrls, setSampleUrls] = useState<string[]>([]);
   const [padIndex, setPadIndex] = useState<number>(-1);
 
   useEffect(() => {
