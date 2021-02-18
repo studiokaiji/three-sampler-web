@@ -3,8 +3,9 @@ import PeakAnalyzer from "../../tools/peak-analyzer";
 
 export type WaveformProps = {
   url: string;
-  width: number;
 } & JSX.IntrinsicElements["div"];
+
+const wrapperId = "waveform-canvas-wrapper";
 
 export default function Waveform(props: WaveformProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -12,7 +13,7 @@ export default function Waveform(props: WaveformProps) {
   useEffect(() => {
     const analyzer = new PeakAnalyzer();
     console.log("A");
-    analyzer.analyze(props.url, 1000).then((peaksArr) => {
+    analyzer.analyze(props.url, 60).then((peaksArr) => {
       drawWaveForm(peaksArr)
     }).catch((err) => {
       console.error(err);
@@ -20,8 +21,16 @@ export default function Waveform(props: WaveformProps) {
   }, []); 
 
   const drawWaveForm = (peaksArr: number[][]) => {
+    const wrapper = document.getElementById(wrapperId);
+    if (!wrapper) throw Error("wrapper is null");
+
     const canvas = canvasRef.current;
     if (!canvas) throw Error("canvas is null.");
+
+    canvas.width = wrapper.clientWidth;
+    canvas.height = wrapper.clientHeight;
+
+    console.log(wrapper.clientWidth, wrapper.clientHeight)
 
     const barWidth = canvas.width / peaksArr[0].length;
     const halfCanvasHeight = canvas.height / 2;
@@ -29,7 +38,7 @@ export default function Waveform(props: WaveformProps) {
     const ctx = canvas.getContext("2d");
     if (!ctx) throw Error ("context is null.");
     
-    ctx.fillStyle = "#000000";
+    ctx.fillStyle = "#a9a9a9";
     
     let sample: number;
     let barHeight: number;
@@ -50,7 +59,9 @@ export default function Waveform(props: WaveformProps) {
 
   return (
     <div {...props}>
-      <canvas ref={canvasRef} width={props.width} height={props.width} />
+      <div id={wrapperId} className="w-full h-full">
+        <canvas ref={canvasRef} />
+      </div>
     </div>
   );
 }
