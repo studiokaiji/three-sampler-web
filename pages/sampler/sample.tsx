@@ -4,8 +4,16 @@ import SectionTab from "../../components/molecules/section-tab";
 import Router from "next/router";
 import Bank from "../../components/molecules/bank";
 import PadGrid from "../../components/molecules/pad-grid";
+import WaveForm from "../../components/atoms/waveform";
 
-type Sample = HTMLAudioElement;
+type Sample = {
+  audio: HTMLAudioElement,
+  waveform?: typeof WaveForm,
+  pitch: number;
+  volume: number;
+  pan: number;
+};
+
 type SampleAction =
 {
   type: "assign",
@@ -19,6 +27,7 @@ type SampleAction =
 function samplesReducer(state: Sample[], action: SampleAction) {
   if (action.type === "assign") {
     state[action.index] = action.value;
+    console.log(state);
   } else {
     state[action.index] = new Audio();
   }
@@ -38,8 +47,9 @@ async function createStream() {
 let recorder: MediaRecorder;
 
 export default function Sample() {
-  const [samples, dispatchSamples] = useReducer(samplesReducer, []);
-  const recordedPadIndexes = useState<number[]>([]);
+  const [samples, dispatchSamples] = useReducer(samplesReducer, Array(16));
+  const [sampleUrls, setSampleUrls] = useState<string[]>(Array(16));
+  const [padIndex, setPadIndex] = useState<number>(-1);
 
   useEffect(() => {
     createStream().then((stream) => {
@@ -58,8 +68,6 @@ export default function Sample() {
     }, 5 * 60 * 1000);
 
     recorder.start();
-
-    console.log("STARTTED")
   }
 
   const stopRecord = async (padIndex: number) => {
@@ -68,37 +76,56 @@ export default function Sample() {
 
     recorder.addEventListener("dataavailable", (e) => {
       const url = URL.createObjectURL(e.data);
-      dispatchSamples({
-        type: "assign",
-        index: padIndex,
-        value: new Audio(url)
-      })
-
-      console.log("dataAvailable", url);
+      loadSample(url, padIndex);
     });
 
     recorder.stop();
   }
 
+  const loadSample = (url: string, padIndex: number) => {
+    dispatchSamples({
+      type: "assign",
+      index: padIndex,
+      value: new Audio(url)
+    });
+
+    const urls = sampleUrls.concat();
+    urls[padIndex] = url;
+
+    setSampleUrls(urls);
+  }
+
   const playSample = (padIndex: number) => {
     samples[padIndex].currentTime = 0;
     samples[padIndex].play();
-    console.log("STARTED PLAY")
   }
 
   const stopSample = (padIndex: number) => {
-    samples[padIndex].pause();
-    console.log("STOPPED PLAY")
-    samples[padIndex].currentTime = 0;
+    if (samples[padIndex]) {
+      samples[padIndex].pause();
+      samples[padIndex].currentTime = 0; 
+    }
+  }
+
+  const stopAllSample = () => {
+    for (let i=0; i<samples.length; i++) {
+      stopSample(i);
+    }
   }
 
   const pressedPadHandler = (index: number) => {
     if (samples[index]) playSample(index);
     else startRecord(index);
+    setPadIndex(index);
   }
 
   const pressedEndPadHandler = (index: number) => {
     if (!samples[index]) stopRecord(index);
+  }
+
+  const droppedFileHandler = (file: File, index: number) => {
+    const url = URL.createObjectURL(file);
+    loadSample(url, index);
   }
 
   return (
@@ -126,11 +153,12 @@ export default function Sample() {
           />
           <PadGrid
             className="w-9/12"
-            selectedPadClassName="bg-primary"
-            padIndex={0}
-            recordedPadIndexes={recordedPadIndexes}
-            onPressPad={(i) => pressedPadHandler(i)}
-            onPressEndPad={(i) => pressedEndPadHandler(i)}
+            selectedPadClassName="bg-gray-200"
+            padIndex={padIndex}
+            sampleUrls={sampleUrls}
+            onPressPad={pressedPadHandler}
+            onPressEndPad={pressedEndPadHandler}
+            onDropFile={droppedFileHandler}
           />
         </div>
       </div>
