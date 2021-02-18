@@ -3,6 +3,7 @@ import PeakAnalyzer from "../../tools/peak-analyzer";
 
 export type WaveformProps = {
   url: string;
+  peakLength: number;
 } & JSX.IntrinsicElements["div"];
 
 const wrapperId = "waveform-canvas-wrapper";
@@ -13,7 +14,7 @@ export default function Waveform(props: WaveformProps) {
   useEffect(() => {
     const analyzer = new PeakAnalyzer();
     console.log("A");
-    analyzer.analyze(props.url, 60).then((peaksArr) => {
+    analyzer.analyze(props.url, props.peakLength).then((peaksArr) => {
       drawWaveForm(peaksArr)
     }).catch((err) => {
       console.error(err);
