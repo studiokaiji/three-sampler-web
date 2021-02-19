@@ -6,9 +6,10 @@ export type WaveformProps = {
   peakLength: number;
 } & JSX.IntrinsicElements["div"];
 
-const wrapperId = "waveform-canvas-wrapper";
+const EX_RATE = 2;
 
 export default function Waveform(props: WaveformProps) {
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -22,24 +23,29 @@ export default function Waveform(props: WaveformProps) {
   }, []); 
 
   const drawWaveForm = (peaksArr: number[][]) => {
-    const wrapper = document.getElementById(wrapperId);
+    const wrapper = wrapperRef.current;
     if (!wrapper) throw Error("wrapper is null");
 
     const canvas = canvasRef.current;
     if (!canvas) throw Error("canvas is null.");
 
-    canvas.width = wrapper.clientWidth;
-    canvas.height = wrapper.clientHeight;
+    const clientWidth = wrapper.clientWidth;
+    const clientHeight = wrapper.clientHeight;
 
-    console.log(wrapper.clientWidth, wrapper.clientHeight)
+    canvas.width = clientWidth * EX_RATE;
+    canvas.height = clientHeight * EX_RATE;
 
-    const barWidth = canvas.width / peaksArr[0].length;
-    const halfCanvasHeight = canvas.height / 2;
+    canvas.style.width = clientWidth + "px";
+    canvas.style.height = clientHeight + "px";
 
     const ctx = canvas.getContext("2d");
     if (!ctx) throw Error ("context is null.");
     
+    ctx.scale(2, 2);
     ctx.fillStyle = "#a9a9a9";
+
+    const barWidth = canvas.width / peaksArr[0].length / EX_RATE;
+    const halfCanvasHeight = canvas.height / 2 / EX_RATE;
     
     let sample: number;
     let barHeight: number;
@@ -60,7 +66,7 @@ export default function Waveform(props: WaveformProps) {
 
   return (
     <div {...props}>
-      <div id={wrapperId} className="w-full h-full">
+      <div ref={wrapperRef} className="w-full h-full">
         <canvas ref={canvasRef} />
       </div>
     </div>
