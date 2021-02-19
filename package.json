@@ -14,7 +14,7 @@
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-dropzone": "^11.3.1",
-    "sass": "^1.32.7",
+    "sass": "^1.32.8",
     "styled-components": "^5.2.1",
     "tailwindcss": "^2.0.3",
     "tone": "^14.7.77"
