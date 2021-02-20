@@ -1,7 +1,7 @@
 import React from "react";
-import RangeSlider from "./range-slider";
-import VerticalSlideBar from "../atoms/vertical-silde-handle";
-import Waveform, { WaveformProps } from "../atoms/waveform";
+import RangeSlider from "./molecules/range-slider";
+import VerticalSlideBar from "./atoms/vertical-silde-handle";
+import Waveform, { WaveformProps } from "./atoms/waveform";
 
 export type WaveformEditorProps = {
   min: number;
