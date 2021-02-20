@@ -7,10 +7,16 @@ export type RangeSliderProps = JSX.IntrinsicElements["div"] & {
   domain: [number, number]
   value: [number, number];
   step?: number;
+  validRangeColor: string;
   onChangeValue: (value: [number, number]) => void;
 };
 
 export default function RangeSlider(props: RangeSliderProps) {
+  const changedSliderValue = (values: readonly number[]) => {
+    if (values.length !== 2) throw Error("value.length is should be 2.");
+    props.onChangeValue(values as [number, number]);
+  }
+
   return (
     <div {...props}>
       <Slider
@@ -18,6 +24,7 @@ export default function RangeSlider(props: RangeSliderProps) {
         mode={1}
         domain={props.domain}
         values={props.value}
+        onChange={changedSliderValue}
       >
         <Rail>
           {({ getRailProps }) => (
@@ -33,7 +40,7 @@ export default function RangeSlider(props: RangeSliderProps) {
                   domain={props.domain}
                   getHandleProps={getHandleProps}
                   handle={handle}
-                  barBgColor="bg-blue-500"
+                  barBgColor={props.validRangeColor}
                 />
               ))}
             </div>
@@ -48,7 +55,7 @@ export default function RangeSlider(props: RangeSliderProps) {
                   source={source}
                   target={target}
                   getTrackProps={getTrackProps}
-                  className="bg-opacity-20 bg-blue-500"
+                  className={"bg-opacity-20 " + props.validRangeColor}
                 />
               ))}
             </div>
