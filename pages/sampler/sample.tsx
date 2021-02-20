@@ -31,7 +31,7 @@ export class Sample {
     this.pan = opts.pan || 0;
     this.oneShot = opts.oneShot || true;
     this.start = opts.start || 0;
-    this.end = opts.end || 0;
+    this.end = opts.end || 100;
   }
 }
 
@@ -154,7 +154,7 @@ export default function SamplePage() {
   }
 
   const changedSamplePropertyOnWaveFormEditor = (sample: Sample) => {
-
+    samples[padIndex] = sample;
   }
 
   return (
@@ -176,10 +176,9 @@ export default function SamplePage() {
         <div className="flex justify-end">
           <WaveformEditor
             className="w-9/12 h-52 bg-white"
-            start={0}
-            end={500}
+            sample={samples[padIndex]}
             url="/test-audio.m4a" peakLength={1000}
-            onChangeValue={(s, e) => console.log(s, e)}
+            onChangeValue={changedSamplePropertyOnWaveFormEditor}
           />
         </div>
         <div className="flex justify-between items-end ...">
