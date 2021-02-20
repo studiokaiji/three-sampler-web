@@ -7,8 +7,8 @@ export type RangeSliderProps = JSX.IntrinsicElements["div"] & {
   domain: [number, number]
   value: [number, number];
   step?: number;
-  onChangeValue: (value: number[]) => void;
-} ;
+  onChangeValue: (value: [number, number]) => void;
+};
 
 export default function RangeSlider(props: RangeSliderProps) {
   return (
