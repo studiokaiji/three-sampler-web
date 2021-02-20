@@ -5,33 +5,73 @@ import Router from "next/router";
 import Bank from "../../components/molecules/bank";
 import PadGrid from "../../components/molecules/pad-grid";
 import WaveformEditor from "../../components/waveform-editor";
+import { Panner, Player } from "tone"
+import { Positive } from "tone/build/esm/core/type/Units";
 
-export class Sample {
-  audio: HTMLAudioElement;
-  pitch: number;
-  volume: number;
-  pan: number;
-  oneShot: boolean;
-  start: number;
-  end: number;
+export class Sample extends Player {
+  constructor(
+    originalAudioUrl?: string, 
+    opts?: Partial<{
+      playbackRate: Positive;
+      db: number;
+      oneShot: boolean;
+      startSec: number;
+      endSec: number;
+      panLevel: number;
+    }>
+  ) {
+    super(originalAudioUrl)
 
-  constructor(opts?: Partial<{
-    audio: HTMLAudioElement;
-    pitch: number;
-    volume: number;
-    pan: number;
-    oneShot: boolean;
-    start: number;
-    end: number;
-  }>) {
+    this.toDestination();
+
     opts ??= {};
-    this.audio = opts.audio || new Audio();
-    this.pitch = opts.pitch || 0;
-    this.volume = opts.volume || 1;
-    this.pan = opts.pan || 0;
+    this.originalAudioUrl = originalAudioUrl || "";
+    this.playbackRate = opts.playbackRate || 1;
+    this.volume.value = opts.db || -6;
     this.oneShot = opts.oneShot || true;
-    this.start = opts.start || 0;
-    this.end = opts.end || 100;
+    
+    if (opts.startSec) this.changeValidRange(opts.startSec, opts.endSec)
+    this._startSec = opts.startSec || 0;
+    this._endSec = opts.endSec || this.buffer.duration;
+
+    const panLevel = opts.panLevel || 0;
+    this._panner = new Panner(panLevel).toDestination();
+    this._panLevel = panLevel;
+    this.connect(this._panner).start();
+  }
+
+  oneShot: boolean;
+  private readonly _panner: Panner;
+  private _panLevel: number;
+  private _startSec: number;
+  private _endSec: number;
+  readonly originalAudioUrl: string;
+
+  async changeValidRange(startSec: number, endSec?: number): Promise<void> {
+    const sliced = this.buffer.slice(startSec, endSec);
+    const url = URL.createObjectURL(sliced);
+    
+    await this.load(url);
+    
+    this._startSec = startSec;
+    if (endSec) this._endSec = endSec;
+  }
+
+  set panLevel(panLevel: number) {
+    this._panner.pan.setValueAtTime(panLevel, 0);
+    this._panLevel = panLevel;
+  }
+
+  get panLevel(): number {
+    return this._panLevel;
+  }
+
+  get startSec(): number {
+    return this._startSec;
+  }
+
+  get endSec(): number {
+    return this._endSec;
   }
 }
 
@@ -48,9 +88,6 @@ type SampleAction =
 function samplesReducer(state: Sample[], action: SampleAction) {
   if (action.type === "assign") {
     state[action.index] = action.value;
-    state.forEach((sample) => {
-      console.log(sample.audio);
-    });
   } else {
     state[action.index] = new Sample();
   }
@@ -110,7 +147,7 @@ export default function SamplePage() {
     dispatchSamples({
       type: "assign",
       index: padIndex,
-      value: new Sample({ audio: new Audio(url) })
+      value: new Sample(url)
     });
 
     const urls = sampleUrls.concat();
@@ -119,25 +156,14 @@ export default function SamplePage() {
     setSampleUrls(urls);
   }
 
-  const playSample = (padIndex: number) => {
-    samples[padIndex].audio.currentTime = 0;
-    samples[padIndex].audio.play();
-  }
-
-  const stopSample = (padIndex: number) => {
-    samples[padIndex].audio.pause();
-    samples[padIndex].audio.currentTime = 0; 
-  }
-
   const stopAllSample = () => {
     for (let i=0; i<samples.length; i++) {
-       if (samples[i]) stopSample(i);
+       if (samples[i]) samples[i].stop(0);
     }
   }
 
   const pressedPadHandler = (index: number) => {
-    console.log(samples[index]);
-    if (samples[index]) playSample(index);
+    if (samples[index]) samples[index].start(0);
     else startRecord(index);
     setPadIndex(index);
   }
@@ -145,7 +171,7 @@ export default function SamplePage() {
   const pressedEndPadHandler = (index: number) => {
     const sample = samples[index];
     if (!sample) stopRecord(index);
-    else if (!sample.oneShot) stopSample(index);
+    else if (!sample.oneShot) sample.stop(0);
   }
 
   const droppedFileHandler = (file: File, index: number) => {
@@ -177,7 +203,7 @@ export default function SamplePage() {
           <WaveformEditor
             className="w-9/12 h-52 bg-white"
             sample={samples[padIndex]}
-            url="/test-audio.m4a" peakLength={1000}
+            url={sampleUrls[padIndex]} peakLength={1000}
             onChangeValue={changedSamplePropertyOnWaveFormEditor}
           />
         </div>
