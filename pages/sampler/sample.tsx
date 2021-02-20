@@ -4,13 +4,16 @@ import SectionTab from "../../components/molecules/section-tab";
 import Router from "next/router";
 import Bank from "../../components/molecules/bank";
 import PadGrid from "../../components/molecules/pad-grid";
+import WaveformEditor from "../../components/waveform-editor";
 
-class Sample {
+export class Sample {
   audio: HTMLAudioElement;
   pitch: number;
   volume: number;
   pan: number;
   oneShot: boolean;
+  start: number;
+  end: number;
 
   constructor(opts?: Partial<{
     audio: HTMLAudioElement;
@@ -18,6 +21,8 @@ class Sample {
     volume: number;
     pan: number;
     oneShot: boolean;
+    start: number;
+    end: number;
   }>) {
     opts ??= {};
     this.audio = opts.audio || new Audio();
@@ -25,6 +30,8 @@ class Sample {
     this.volume = opts.volume || 1;
     this.pan = opts.pan || 0;
     this.oneShot = opts.oneShot || true;
+    this.start = opts.start || 0;
+    this.end = opts.end || 0;
   }
 }
 
@@ -146,6 +153,10 @@ export default function SamplePage() {
     loadSample(url, index);
   }
 
+  const changedSamplePropertyOnWaveFormEditor = (sample: Sample) => {
+
+  }
+
   return (
     <body className="bg-secondary">
       <div id="sampler-sample" className="m-8 max-w-6xl grid gap-y-10">
@@ -160,6 +171,15 @@ export default function SamplePage() {
             unselectedClassName="text-text-primary bg-secondary-light"
             selected="sample"
             onSelectCell={(text) => Router.push("/sampler/" + text)}
+          />
+        </div>
+        <div className="flex justify-end">
+          <WaveformEditor
+            className="w-9/12 h-52 bg-white"
+            start={0}
+            end={500}
+            url="/test-audio.m4a" peakLength={1000}
+            onChangeValue={(s, e) => console.log(s, e)}
           />
         </div>
         <div className="flex justify-between items-end ...">
