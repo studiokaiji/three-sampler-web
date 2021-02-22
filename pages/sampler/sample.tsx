@@ -41,11 +41,11 @@ export class Sample extends Player {
   }
 
   oneShot: boolean;
-  private readonly _panner: Panner;
+  readonly originalAudioUrl: string;
   private _panLevel: number;
   private _startSec: number;
   private _endSec: number;
-  readonly originalAudioUrl: string;
+  private readonly _panner: Panner;
 
   async changeValidRange(startSec: number, endSec?: number): Promise<void> {
     const sliced = this.buffer.slice(startSec, endSec);
@@ -108,7 +108,6 @@ let recorder: MediaRecorder;
 
 export default function SamplePage() {
   const [samples, dispatchSamples] = useReducer(samplesReducer, []);
-  const [sampleUrls, setSampleUrls] = useState<string[]>([]);
   const [padIndex, setPadIndex] = useState<number>(-1);
 
   useEffect(() => {
@@ -149,17 +148,6 @@ export default function SamplePage() {
       index: padIndex,
       value: new Sample(url)
     });
-
-    const urls = sampleUrls.concat();
-    urls[padIndex] = url;
-
-    setSampleUrls(urls);
-  }
-
-  const stopAllSample = () => {
-    for (let i=0; i<samples.length; i++) {
-       if (samples[i]) samples[i].stop(0);
-    }
   }
 
   const pressedPadHandler = (index: number) => {
@@ -203,7 +191,7 @@ export default function SamplePage() {
           <WaveformEditor
             className="w-9/12 h-52 bg-white"
             sample={samples[padIndex]}
-            url={sampleUrls[padIndex]} peakLength={1000}
+            url={samples[padIndex].originalAudioUrl} peakLength={1000}
             onChangeValue={changedSamplePropertyOnWaveFormEditor}
           />
         </div>
@@ -218,7 +206,7 @@ export default function SamplePage() {
             className="w-9/12"
             selectedPadClassName="bg-gray-200"
             padIndex={padIndex}
-            sampleUrls={sampleUrls}
+            sampleUrls={samples[padIndex].originalAudioUrl}
             onPressPad={pressedPadHandler}
             onPressEndPad={pressedEndPadHandler}
             onDropFile={droppedFileHandler}
