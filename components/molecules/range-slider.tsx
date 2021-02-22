@@ -6,7 +6,6 @@ import VerticalSlideHandle from "../atoms/vertical-silde-handle";
 export type RangeSliderProps = JSX.IntrinsicElements["div"] & {
   domain: [number, number]
   value: [number, number];
-  step?: number;
   validRangeColor: string;
   onChangeValue: (value: [number, number]) => void;
 };
@@ -21,7 +20,7 @@ export default function RangeSlider(props: RangeSliderProps) {
     <div {...props}>
       <Slider
         className="w-full h-ful"
-        mode={1}
+        mode={3}
         domain={props.domain}
         values={props.value}
         onChange={changedSliderValue}
