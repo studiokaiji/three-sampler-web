@@ -1,7 +1,7 @@
 import React from "react";
 import { Slider, Rail, Handles, Tracks } from "react-compound-slider";
-import SlideTrack from "../atoms/slide-track";
-import VerticalSlideHandle from "../atoms/vertical-silde-handle";
+import SlideTrack from "./slide-track";
+import VerticalSlideHandle from "./vertical-silde-handle";
 
 export type RangeSliderProps = JSX.IntrinsicElements["div"] & {
   domain: [number, number]
@@ -32,15 +32,24 @@ export default function RangeSlider(props: RangeSliderProps) {
         </Rail>
         <Handles>
           {({ handles, getHandleProps }) => (
-            <div className="slider-handles">
+            <div className="invisible-slider-handles">
               {handles.map((handle) => (
-                <VerticalSlideHandle
-                  key={handle.id}  
-                  domain={props.domain}
-                  getHandleProps={getHandleProps}
-                  handle={handle}
-                  barBgColor={props.validRangeColor}
-                />
+                <div
+                  key={handle.id}
+                  className="absolute h-full -ml-1"
+                  role="slider"
+                  aria-valuemin={props.domain[0]}
+                  aria-valuemax={props.domain[1]}
+                  aria-valuenow={props.value}
+                  style={{
+                    left: `${handle.percent}%`
+                  }}
+                  {...getHandleProps(handle.id)}
+                >
+                  <div className={`${props.validRangeColor} rounded-full w-2 h-2 -mt-2"`} />
+                  <div className={`${props.validRangeColor} w-0.5 h-full m-auto"`} />
+                  <div className={`${props.validRangeColor} rounded-full w-2 h-2`} />
+                </div>
               ))}
             </div>
           )}
@@ -49,12 +58,14 @@ export default function RangeSlider(props: RangeSliderProps) {
           {({ tracks, getTrackProps }) => (
             <div className="slider-tracks">
               {tracks.map(({ id, source, target }) => (
-                <SlideTrack
+                <div
                   key={id}
-                  source={source}
-                  target={target}
-                  getTrackProps={getTrackProps}
-                  className={"bg-opacity-20 " + props.validRangeColor}
+                  className={"absolute h-full " + props.className}
+                  style={{
+                    left: `${source.percent}%`,
+                    width: `${target.percent - source.percent}%`
+                  }}
+                  {...getTrackProps()}
                 />
               ))}
             </div>

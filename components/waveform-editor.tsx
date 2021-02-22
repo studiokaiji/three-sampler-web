@@ -1,5 +1,5 @@
 import React from "react";
-import RangeSlider from "./molecules/range-slider";
+import RangeSlider from "./atoms/range-slider";
 import Waveform from "./atoms/waveform";
 import { Sample } from "../pages/sampler/sample";
 
