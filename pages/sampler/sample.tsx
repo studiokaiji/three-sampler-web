@@ -206,7 +206,7 @@ export default function SamplePage() {
             className="w-9/12"
             selectedPadClassName="bg-gray-200"
             padIndex={padIndex}
-            sampleUrls={samples[padIndex].originalAudioUrl}
+            sampleUrls={samples.map((sample) => sample.originalAudioUrl)}
             onPressPad={pressedPadHandler}
             onPressEndPad={pressedEndPadHandler}
             onDropFile={droppedFileHandler}
