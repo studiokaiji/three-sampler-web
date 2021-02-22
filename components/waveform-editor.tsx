@@ -1,6 +1,6 @@
 import React from "react";
 import RangeSlider from "./molecules/range-slider";
-import Waveform, { WaveformProps } from "./atoms/waveform";
+import Waveform from "./atoms/waveform";
 import { Sample } from "../pages/sampler/sample";
 
 export type WaveformEditorProps = {
@@ -8,18 +8,17 @@ export type WaveformEditorProps = {
   max?: number;
   sample?: Sample;
   onChangeValue: (sample: Sample) => void;
-} & WaveformProps
+} & React.HTMLAttributes<HTMLDivElement>
 
 export default function WaveformEditor(props: WaveformEditorProps) {
-  const min = props.min || 0;
-  const max = props.max || 100;
-
   const sample = props.sample;
   if (!sample) return <div {...props} />
 
+  const min = props.min || 0;
+  const max = props.max || 100;
+
   const changedRangeSliderValue = ([start, end]: [number, number] = [min, max]) => {
-    sample.start = start;
-    sample.end = end;
+    sample.changeValidRange(start, end);
     props.onChangeValue(sample);
   };
 
@@ -30,10 +29,14 @@ export default function WaveformEditor(props: WaveformEditorProps) {
           className="w-full h-full absolute"
           validRangeColor="bg-blue-500"
           domain={[min, max]}
-          value={[sample.start, sample.end]}
+          value={[sample.startSec, sample.endSec]}
           onChangeValue={changedRangeSliderValue}
         />
-        <Waveform className="h-full" url={props.url} peakLength={props.peakLength} />
+        <Waveform
+          className="h-full"
+          url={sample.originalAudioUrl}
+          peakLength={1000}
+        />
       </div>
     </div>
   );
