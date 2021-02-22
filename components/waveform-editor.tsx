@@ -12,14 +12,15 @@ export type WaveformEditorProps = {
 
 export default function WaveformEditor(props: WaveformEditorProps) {
   const sample = props.sample;
-  if (!sample) return <div {...props} />
+  if (!sample) return <div {...props} />;
 
   const min = props.min || 0;
   const max = props.max || 100;
 
   const changedRangeSliderValue = ([start, end]: [number, number] = [min, max]) => {
-    sample.changeValidRange(start, end);
-    props.onChangeValue(sample);
+    sample.changeValidRange(start, end)
+      .then(() => props.onChangeValue(sample))
+      .catch((err) => console.error(err));
   };
 
   return (
